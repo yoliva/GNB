@@ -16,5 +16,7 @@ namespace GNB.Data
         }
 
         public DbSet<Transaction> Transactions { get; set; }
+
+        public DbSet<Rate> Rates { get; set; }
     }
 }
