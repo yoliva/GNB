@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Reflection;
+using GNB.Core;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GNB.Data
@@ -13,5 +15,16 @@ namespace GNB.Data
             : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public DbSet<Transaction> Transactions { get; set; }
+
+        public DbSet<Rate> Rates { get; set; }
     }
 }
