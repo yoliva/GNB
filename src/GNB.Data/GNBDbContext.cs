@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using GNB.Core;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GNB.Data
@@ -13,5 +14,7 @@ namespace GNB.Data
             : base(options)
         {
         }
+
+        public DbSet<Transaction> Transactions { get; set; }
     }
 }
