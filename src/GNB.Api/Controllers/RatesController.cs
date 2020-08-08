@@ -18,7 +18,11 @@ namespace GNB.Api.Controllers
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            return Ok("success");
+            return Ok(new
+            {
+                Currency = "USD",
+                Rate = 12.5
+            });
         }
     }
 }
