@@ -1,8 +1,11 @@
 using System;
 using System.IO;
 using System.Reflection;
+using GNB.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +33,11 @@ namespace GNB.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            services.AddDbContext<GNBDbContext>(
+                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+                    x => x.MigrationsAssembly(typeof(GNBDbContext).Assembly.FullName)));
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddControllers();
         }
