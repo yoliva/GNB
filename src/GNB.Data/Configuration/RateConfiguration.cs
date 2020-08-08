@@ -13,6 +13,9 @@ namespace GNB.Data.Configuration
             builder.Property(x => x.From).HasMaxLength(10).IsRequired();
             builder.Property(x => x.To).HasMaxLength(10).IsRequired();
             builder.Property(x => x.ChangeRate).HasColumnType("decimal(12,3)").IsRequired();
+
+            builder.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            builder.Property(x => x.LastUpdatedAt).HasDefaultValueSql("GETUTCDATE()");
         }
     }
 }
