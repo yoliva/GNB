@@ -46,7 +46,7 @@ namespace GNB.Api
 
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "GNB API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "GNB API V1");
             });
 
             app.UseHttpsRedirection();
