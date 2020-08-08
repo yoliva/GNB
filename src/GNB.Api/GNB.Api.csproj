@@ -20,6 +20,12 @@
 	  <ProjectReference Include="..\GNB.Services\GNB.Services.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\GNB.Core\GNB.Core.csproj" />
+	  <ProjectReference Include="..\GNB.Infrastructure\GNB.Infrastructure.csproj" />
+	  <ProjectReference Include="..\GNB.Services\GNB.Services.csproj" />
+	</ItemGroup>
+
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>

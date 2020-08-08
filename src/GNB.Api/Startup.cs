@@ -1,11 +1,15 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text;
+using GNB.Infrastructure.Capabilities;
 using GNB.Data;
 using GNB.Services;
 using GNB.Services.Mappings;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +33,7 @@ namespace GNB.Api
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "GNB API", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "GNB API", Version = "v1" });
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -56,6 +60,19 @@ namespace GNB.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseExceptionHandler(app => app.Use(async (context, next) =>
+            {
+                var ex = context.Features.Get<IExceptionHandlerFeature>();
+
+                if (ex.Error is GNBException)
+                {
+                    
+                    await context.Response.WriteAsync(ex.Error.Message, Encoding.UTF8).ConfigureAwait(false);
+                }
+                else
+                    await context.Response.WriteAsync(ex.Error.Message, Encoding.UTF8).ConfigureAwait(false);
+            }));
 
             app.UseSwagger();
 
