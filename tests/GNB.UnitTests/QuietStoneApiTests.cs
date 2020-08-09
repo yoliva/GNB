@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using GNB.Services.Mappings;
 using GNB.Services.QuietStone;
 using Microsoft.Extensions.Options;
 using Xunit;
@@ -18,6 +19,8 @@ namespace GNB.UnitTests
             });
 
             _quietStoneApi = new QuietStoneApi(opt);
+
+            MapsterConfig.Configure();
         }
 
         [Fact(Skip = "just for development purposes")]
@@ -26,6 +29,14 @@ namespace GNB.UnitTests
             var rates = await _quietStoneApi.GetRates();
 
             Assert.True(rates.Any());
+        }
+
+        [Fact(Skip = "just for development purposes")]
+        public async void Can_Fetch_Transactions()
+        {
+            var transactions = await _quietStoneApi.GetTransactions();
+
+            Assert.True(transactions.Any());
         }
     }
 }

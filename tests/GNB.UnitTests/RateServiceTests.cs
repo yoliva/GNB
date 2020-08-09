@@ -8,6 +8,7 @@ using GNB.Services;
 using GNB.Services.Mappings;
 using GNB.Services.QuietStone;
 using GNB.Services.QuietStone.Dtos;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -17,6 +18,7 @@ namespace GNB.UnitTests
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly Mock<IQuietStoneApi> _quietStoneApi;
+        private readonly ILogger<RateService> _logger;
 
         public RateServiceTests()
         {
@@ -39,6 +41,7 @@ namespace GNB.UnitTests
 
             _unitOfWork = uowMock.Object;
             _quietStoneApi = quietStoneApiMock;
+            _logger = new Mock<ILogger<RateService>>().Object;
 
             MapsterConfig.Configure();
         }
@@ -53,7 +56,7 @@ namespace GNB.UnitTests
                     return Enumerable.Empty<QuietStoneRateDto>();
                 }));
 
-            var service = new RateService(_unitOfWork, _quietStoneApi.Object);
+            var service = new RateService(_unitOfWork, _quietStoneApi.Object, _logger);
             
             var rates = (await service.GetRates()).ToList();
 
@@ -66,7 +69,7 @@ namespace GNB.UnitTests
         [Fact]
         public async void Rates_Are_From_Properly_From_QuietStone()
         {
-            var service = new RateService(_unitOfWork, _quietStoneApi.Object);
+            var service = new RateService(_unitOfWork, _quietStoneApi.Object, _logger);
 
             var rates = (await service.GetRates()).ToList();
 
