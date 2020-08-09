@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 
 namespace GNB.Api
 {
@@ -65,13 +66,22 @@ namespace GNB.Api
             {
                 var ex = context.Features.Get<IExceptionHandlerFeature>();
 
-                if (ex.Error is GNBException)
+                context.Response.ContentType = "application/json";
+
+                if (ex.Error is GNBException exception)
                 {
-                    
-                    await context.Response.WriteAsync(ex.Error.Message, Encoding.UTF8).ConfigureAwait(false);
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new
+                    {
+                        exception.Code,
+                        exception.Message
+                    }), Encoding.UTF8).ConfigureAwait(false);
                 }
                 else
-                    await context.Response.WriteAsync(ex.Error.Message, Encoding.UTF8).ConfigureAwait(false);
+                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new
+                    {
+                        Code = ErrorCode.UnexpectedError,
+                        Message = "Ups, something went wrong. It's not you, it's us."
+                    }), Encoding.UTF8).ConfigureAwait(false);
             }));
 
             app.UseSwagger();
