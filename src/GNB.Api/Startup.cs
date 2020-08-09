@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using GNB.Data;
+using GNB.Services;
+using GNB.Services.Mappings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +36,10 @@ namespace GNB.Api
                 c.IncludeXmlComments(xmlPath);
             });
 
+            MapsterConfig.Configure();
+
             services.AddData();
+            services.AddServices();
 
             services.AddDbContext<GNBDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
