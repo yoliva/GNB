@@ -34,6 +34,8 @@ namespace GNB.Api
                 c.IncludeXmlComments(xmlPath);
             });
 
+            services.AddData();
+
             services.AddDbContext<GNBDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
                     x => x.MigrationsAssembly(typeof(GNBDbContext).Assembly.FullName)));
