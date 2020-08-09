@@ -1,9 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GNB.Core;
 using GNB.Core.UnitOfWork;
+using GNB.Infrastructure.Capabilities;
 using GNB.Services;
+using GNB.Services.Dtos;
 using GNB.Services.Mappings;
+using GNB.Services.QuietStone;
+using GNB.Services.QuietStone.Dtos;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -12,6 +18,9 @@ namespace GNB.UnitTests
     public class TransactionServiceTests
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IQuietStoneApi _failingQuietStoneApi;
+        private readonly IQuietStoneApi _quietStoneApi;
+        private readonly ILogger<TransactionService> _logger;
 
         public TransactionServiceTests()
         {
@@ -25,17 +34,36 @@ namespace GNB.UnitTests
                     new Transaction {ID = "4", Currency = "CAD", Amount = 23m, Sku = "AX10"}
                 }.AsQueryable());
 
+            var quietStoneApiMock = new Mock<IQuietStoneApi>();
+            quietStoneApiMock.Setup(x => x.GetTransactions())
+                .Returns(Task.Run(() => new List<QuietStoneTransactionDto>
+                {
+                    new QuietStoneTransactionDto {Currency = "USD", Sku = "J385X", Amount = 18m},
+                    new QuietStoneTransactionDto {Currency = "CAD", Sku = "J385Y", Amount = 44.5m}
+                }.AsEnumerable()));
+
+            var failingQuietStoneApi = new Mock<IQuietStoneApi>();
+            failingQuietStoneApi.Setup(x => x.GetTransactions())
+                .Returns(Task.Run(() =>
+                {
+                    throw new GNBException("some fake message", ErrorCode.UnableToRetrieveTransactionsFromQuietStone);
+                    return Enumerable.Empty<QuietStoneTransactionDto>();
+                }));
+
             _unitOfWork = uowMock.Object;
+            _failingQuietStoneApi = failingQuietStoneApi.Object;
+            _quietStoneApi = quietStoneApiMock.Object;
+            _logger = new Mock<ILogger<TransactionService>>().Object;
 
             MapsterConfig.Configure();
         }
 
         [Fact]
-        public void TransactionsAreReturned()
+        public async void Transactions_Are_Returned_From_Db_If_QuietStone_Fail()
         {
-            var service = new TransactionService(_unitOfWork);
+            var service = new TransactionService(_unitOfWork, _failingQuietStoneApi, _logger);
 
-            var rates = service.GetTransactions().ToList();
+            var rates = (await service.GetTransactions()).ToList();
 
             var ax10Transaction = rates.Single(x => x.ID == "4");
 
@@ -46,11 +74,11 @@ namespace GNB.UnitTests
         }
 
         [Fact]
-        public void TransactionsAreFilteredBySku()
+        public async void Transactions_Are_Filtered_By_Sku()
         {
-            var service = new TransactionService(_unitOfWork);
+            var service = new TransactionService(_unitOfWork, _failingQuietStoneApi, _logger);
 
-            var rates = service.GetTransactionsBySku("AX10").ToList();
+            var rates = (await service.GetTransactionsBySku("AX10")).ToList();
 
             var ax10Transaction = rates.Single(x => x.ID == "1");
 
@@ -58,6 +86,35 @@ namespace GNB.UnitTests
             Assert.All(rates, x => Assert.Equal("AX10", x.Sku));
             Assert.Equal(23.5m, ax10Transaction.Amount);
             Assert.Equal("USD", ax10Transaction.Currency);
+        }
+
+        [Fact]
+        public async void Transaction_Are_Returned_From_QuietStone()
+        {
+            var service = new TransactionService(_unitOfWork, _quietStoneApi, _logger);
+
+            var rates = (await service.GetTransactions()).ToList();
+
+            var j385Transaction = rates.Single(x => x.Sku == "J385Y");
+
+            Assert.Equal(2, rates.Count);
+            Assert.Equal(44.5m, j385Transaction.Amount);
+            Assert.Equal("CAD", j385Transaction.Currency);
+        }
+
+        [Fact]
+        public async void Transactions_From_QuietStone_Are_Filtered_By_Sku()
+        {
+            var service = new TransactionService(_unitOfWork, _quietStoneApi, _logger);
+
+            var rates = (await service.GetTransactionsBySku("J385X")).ToList();
+
+            var j385Transaction = rates.Single(x => x.Sku == "J385X");
+
+            Assert.Single(rates);
+            Assert.All(rates, x => Assert.Equal("J385X", x.Sku));
+            Assert.Equal(18, j385Transaction.Amount);
+            Assert.Equal("USD", j385Transaction.Currency);
         }
     }
 }

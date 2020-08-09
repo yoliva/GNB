@@ -6,6 +6,7 @@
         {
             RateMapping.Configure();
             TransactionMapping.Configure();
+            QuietStoneTransactionMapping.Configure();
         }
     }
 }

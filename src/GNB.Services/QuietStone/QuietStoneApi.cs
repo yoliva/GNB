@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GNB.Infrastructure.Capabilities;
+using GNB.Services.Dtos;
 using GNB.Services.QuietStone.Dtos;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -33,6 +34,20 @@ namespace GNB.Services.QuietStone
 
             var dataStr = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<IEnumerable<QuietStoneRateDto>>(dataStr);
+        }
+
+        public async Task<IEnumerable<QuietStoneTransactionDto>> GetTransactions()
+        {
+            var response = await _client.Value.GetAsync(_cfg.TransactionEndpoint);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                const string msg = "Unable to retrieve transactions from QuietStone";
+                throw new GNBException(msg, ErrorCode.UnableToRetrieveTransactionsFromQuietStone);
+            }
+
+            var dataStr = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<IEnumerable<QuietStoneTransactionDto>>(dataStr);
         }
     }
 }
