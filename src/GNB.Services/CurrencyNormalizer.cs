@@ -21,6 +21,12 @@ namespace GNB.Services
 
         public async Task<IEnumerable<TransactionDto>> Normalize(string currency, IEnumerable<TransactionDto> transactions)
         {
+            _logger.LogInformation("Normalizing transactions", new
+            {
+                currency,
+                Count = transactions.Count(),
+            });
+
             var rates = (await _rateService.GetRates()).ToList();
             var ratesDict = rates.ToDictionary(x => (x.From, x.To));
 
@@ -29,14 +35,18 @@ namespace GNB.Services
                 .Select(t => (from: t.Currency, to: currency))
                 .ToList();
 
-            var fullRates = _rateResolver.GetRates(missingRates, rates);
-            return transactions.Select(t => new TransactionDto
+            var ratesDefinition = _rateResolver.GetRatesDefinition(missingRates, rates);
+            var normalizedTransactions = transactions.Select(t => new TransactionDto
             {
                 ID = t.ID,
                 Currency = currency,
                 Sku = t.Sku,
-                Amount = t.Currency != currency ? t.Amount * fullRates[(t.Currency, currency)] : t.Amount
+                Amount = t.Currency != currency ? t.Amount * ratesDefinition[(t.Currency, currency)] : t.Amount
             });
+
+            _logger.LogInformation("Transactions normalized successfully");
+
+            return normalizedTransactions;
         }
     }
 }

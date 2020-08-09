@@ -1,4 +1,6 @@
-﻿using GNB.Services;
+﻿using System.Threading.Tasks;
+using GNB.Core;
+using GNB.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GNB.Api.Controllers
@@ -15,16 +17,16 @@ namespace GNB.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
-            return Ok(_transactionService.GetTransactions());
+            return Ok(await _transactionService.GetTransactions());
         }
 
         [HttpGet]
         [Route("sku/{sku}")]
-        public ActionResult GetBySku(string sku, string currency = "EUR")
+        public async Task<ActionResult> GetBySku(string sku, string currency = KnownCurrencies.Euro)
         {
-            return Ok(_transactionService.GetTransactionsBySku(sku));
+            return Ok(await _transactionService.GetTransactionsBySku(sku, currency));
         }
     }
 }

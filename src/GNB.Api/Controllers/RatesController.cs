@@ -1,4 +1,5 @@
-﻿using GNB.Services;
+﻿using System.Threading.Tasks;
+using GNB.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GNB.Api.Controllers
@@ -15,9 +16,9 @@ namespace GNB.Api.Controllers
         }
 
         [HttpGet]
-        public ActionResult Get()
+        public async Task<ActionResult> Get()
         {
-            return Ok(_rateService.GetRates());
+            return Ok(await _rateService.GetRates());
         }
     }
 }

@@ -41,7 +41,7 @@ namespace GNB.UnitTests
         public void Can_Resolve_Exchanges(string from, string to, decimal rate)
         {
             var rates = _rateResolver
-                .GetRates(new List<(string, string)> {(from, to)}, _availableRates);
+                .GetRatesDefinition(new List<(string, string)> {(from, to)}, _availableRates);
 
             Assert.Equal(rate, rates[(from, to)]);
         }
@@ -49,14 +49,14 @@ namespace GNB.UnitTests
         [Fact]
         public void Null_Missing_Rates_Throws_Exception()
         {
-            Assert.Throws<ArgumentNullException>(() => _rateResolver.GetRates(null, _availableRates));
+            Assert.Throws<ArgumentNullException>(() => _rateResolver.GetRatesDefinition(null, _availableRates));
         }
 
         [Fact]
         public void Null_Available_Rates_Throws_Exception()
         {
             Assert.Throws<ArgumentNullException>(() =>
-                _rateResolver.GetRates(new List<(string from, string to)> {("USD", "CAD")}, null));
+                _rateResolver.GetRatesDefinition(new List<(string from, string to)> {("USD", "CAD")}, null));
         }
     }
 }

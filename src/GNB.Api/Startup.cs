@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Text;
 using GNB.Infrastructure.Capabilities;
@@ -72,6 +73,7 @@ namespace GNB.Api
 
                 if (ex.Error is GNBException exception)
                 {
+                    context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
                     await context.Response.WriteAsync(JsonConvert.SerializeObject(new
                     {
                         exception.Code,
@@ -79,11 +81,13 @@ namespace GNB.Api
                     }), Encoding.UTF8).ConfigureAwait(false);
                 }
                 else
+                {
                     await context.Response.WriteAsync(JsonConvert.SerializeObject(new
                     {
                         Code = ErrorCode.UnexpectedError,
                         Message = "Ups, something went wrong. It's not you, it's us."
                     }), Encoding.UTF8).ConfigureAwait(false);
+                }
             }));
 
             app.UseSwagger();

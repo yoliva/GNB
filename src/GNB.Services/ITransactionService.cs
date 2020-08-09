@@ -7,6 +7,6 @@ namespace GNB.Services
     public interface ITransactionService
     {
         Task<IEnumerable<TransactionDto>> GetTransactions();
-        Task<IEnumerable<TransactionDto>> GetTransactionsBySku(string sku);
+        Task<IEnumerable<TransactionDto>> GetTransactionsBySku(string sku, string displayCurrency);
     }
 }

@@ -16,7 +16,7 @@ namespace GNB.Services
             _logger = logger;
         }
 
-        public Dictionary<(string, string), decimal> GetRates(List<(string from, string to)> missingRates, List<RateDto> availableRates)
+        public Dictionary<(string, string), decimal> GetRatesDefinition(List<(string from, string to)> missingRates, List<RateDto> availableRates)
         {
             if (missingRates is null)
                 throw new ArgumentNullException(nameof(missingRates));
