@@ -1,28 +1,23 @@
-﻿using System.Threading.Tasks;
+﻿using GNB.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace GNB.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v1/[controller]")]
     public class RatesController : ControllerBase
     {
-        private readonly ILogger<RatesController> _logger;
+        private readonly IRateService _rateService;
 
-        public RatesController(ILogger<RatesController> logger)
+        public RatesController(IRateService rateService)
         {
-            _logger = logger;
+            _rateService = rateService;
         }
 
         [HttpGet]
-        public async Task<ActionResult> Get()
+        public ActionResult Get()
         {
-            return Ok(new
-            {
-                Currency = "USD",
-                Rate = 12.5
-            });
+            return Ok(_rateService.GetRates());
         }
     }
 }
