@@ -5,6 +5,7 @@
         public static void Configure()
         {
             RateMapping.Configure();
+            TransactionMapping.Configure();
         }
     }
 }
