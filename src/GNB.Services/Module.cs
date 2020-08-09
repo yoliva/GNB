@@ -7,6 +7,7 @@ namespace GNB.Services
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddScoped<IRateService, RateService>();
+            services.AddScoped<ITransactionService, TransactionService>();
 
             return services;
         }
