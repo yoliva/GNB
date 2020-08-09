@@ -33,7 +33,7 @@ namespace GNB.Services
             }
             catch (GNBException bnbEx)
             {
-                _logger.LogError("Error fetching data from QuietStone. Returning data from DB instead", bnbEx);
+                _logger.LogError("Error fetching rates from QuietStone. Returning data from DB instead", bnbEx);
                 return _unitOfWork.RateRepository.GetAll().Select(x => x.Adapt<RateDto>());
             }
         }
