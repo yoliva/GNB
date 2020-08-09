@@ -22,7 +22,7 @@ namespace GNB.Api.Controllers
 
         [HttpGet]
         [Route("sku/{sku}")]
-        public ActionResult GetBySku(string sku)
+        public ActionResult GetBySku(string sku, string currency = "EUR")
         {
             return Ok(_transactionService.GetTransactionsBySku(sku));
         }

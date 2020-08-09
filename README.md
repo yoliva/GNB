@@ -7,3 +7,11 @@ Gloiath National Bank
 Add Migrations: `dotnet ef migrations add <MigrationName> --startup-project ./GNB.Api/ --project ./GNB.Data/`
 
 Update Database: `dotnet ef database update --project ./GNB.Api/`
+
+## API Documentation
+
+https://localhost:5001/swagger/index.html
+
+## Board Url
+
+https://github.com/yoliva/gloiath-national-bank/projects/1
