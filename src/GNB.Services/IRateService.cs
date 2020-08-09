@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using GNB.Services.Dtos;
 
 namespace GNB.Services
 {
     public interface IRateService
     {
-        IEnumerable<RateDto> GetRates();
+        Task<IEnumerable<RateDto>> GetRates();
     }
 }

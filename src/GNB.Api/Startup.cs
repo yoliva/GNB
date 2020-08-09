@@ -6,6 +6,7 @@ using GNB.Infrastructure.Capabilities;
 using GNB.Data;
 using GNB.Services;
 using GNB.Services.Mappings;
+using GNB.Services.QuietStone;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -40,11 +41,12 @@ namespace GNB.Api
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-
+                
             MapsterConfig.Configure();
 
+            services.AddServices(cfg => Configuration.GetSection("QuietStoneConfig").Bind(cfg));
+
             services.AddData();
-            services.AddServices();
 
             services.AddDbContext<GNBDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),

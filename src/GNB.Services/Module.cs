@@ -1,15 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using GNB.Services.QuietStone;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GNB.Services
 {
     public static class Module
     {
-        public static IServiceCollection AddServices(this IServiceCollection services)
+        public static IServiceCollection AddServices(this IServiceCollection services, Action<QuietStoneConfig> config)
         {
-            services.AddScoped<IRateService, RateService>();
-            services.AddScoped<ITransactionService, TransactionService>();
-
-            return services;
+            return services
+                .Configure(config)
+                .AddScoped<IRateService, RateService>()
+                .AddScoped<ITransactionService, TransactionService>()
+                .AddScoped<IQuietStoneApi, QuietStoneApi>();
         }
     }
 }
