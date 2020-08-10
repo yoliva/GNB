@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GNB.Core.UnitOfWork;
 using GNB.Infrastructure.Capabilities;
+using GNB.QuietStone;
 using GNB.Services.Dtos;
-using GNB.Services.QuietStone;
 using Mapster;
 using Microsoft.Extensions.Logging;
 

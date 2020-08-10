@@ -6,6 +6,7 @@ using System.Text;
 using GNB.Api.Helpers;
 using GNB.Infrastructure.Capabilities;
 using GNB.Data;
+using GNB.QuietStone;
 using GNB.Services;
 using GNB.Services.Mappings;
 using GNB.Services.QuietStone;
@@ -44,11 +45,10 @@ namespace GNB.Api
                 c.IncludeXmlComments(xmlPath);
             });
 
-            MapsterConfig.Configure();
-
-            services.AddServices(cfg => Configuration.GetSection("QuietStoneConfig").Bind(cfg));
-
-            services.AddData();
+            services
+                .AddData()
+                .AddQuietStone(cfg => Configuration.GetSection("QuietStoneConfig").Bind(cfg))
+                .AddServices();
 
             services.AddCors(c => { c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin()); });
 

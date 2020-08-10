@@ -4,8 +4,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GNB.Infrastructure.Capabilities;
-using GNB.Services.Dtos;
-using GNB.Services.QuietStone.Dtos;
+using GNB.QuietStone;
+using GNB.QuietStone.Dtos;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -22,7 +22,7 @@ namespace GNB.Services.QuietStone
             _client = new Lazy<HttpClient>(() => new HttpClient {BaseAddress = new Uri(_cfg.BaseUrl)});
         }
 
-        public async Task<IEnumerable<QuietStoneRateDto>> GetRates()
+        public async Task<List<QuietStoneRateDto>> GetRates()
         {
             var response = await _client.Value.GetAsync(_cfg.RatesEndpoint);
 
@@ -33,10 +33,10 @@ namespace GNB.Services.QuietStone
             }
 
             var dataStr = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IEnumerable<QuietStoneRateDto>>(dataStr);
+            return JsonConvert.DeserializeObject<List<QuietStoneRateDto>>(dataStr);
         }
 
-        public async Task<IEnumerable<QuietStoneTransactionDto>> GetTransactions()
+        public async Task<List<QuietStoneTransactionDto>> GetTransactions()
         {
             var response = await _client.Value.GetAsync(_cfg.TransactionEndpoint);
 
@@ -47,7 +47,7 @@ namespace GNB.Services.QuietStone
             }
 
             var dataStr = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<IEnumerable<QuietStoneTransactionDto>>(dataStr);
+            return JsonConvert.DeserializeObject<List<QuietStoneTransactionDto>>(dataStr);
         }
     }
 }

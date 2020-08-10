@@ -1,8 +1,10 @@
 ﻿namespace GNB.Core
 {
-    public class KnownCurrencies
+    public static class KnownCurrencies
     {
-        public const string Euro = "EUR";
-        public const string Usd = "USD";
+        public const string EURO = "EUR";
+        public const string USD = "USD";
+        public const string CAD = "CAD";
+        public const string UYU = "UYU";
     }
 }
