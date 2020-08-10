@@ -1,5 +1,6 @@
 ﻿using GNB.Core;
 using GNB.Services.Dtos;
+using GNB.Services.QuietStone.Dtos;
 using Mapster;
 
 namespace GNB.Services.Mappings

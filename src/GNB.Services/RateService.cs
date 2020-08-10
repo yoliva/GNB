@@ -28,7 +28,11 @@ namespace GNB.Services
             try
             {
                 _logger.LogInformation("Attempt to retrieve rates from QuietStone");
+
                 var liveData = await _quietStoneApi.GetRates();
+
+                _logger.LogInformation("Rates successfully retrieved from QuietStone");
+
                 return liveData.Select(x => x.Adapt<RateDto>());
             }
             catch (GNBException bnbEx)

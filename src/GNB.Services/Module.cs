@@ -12,6 +12,8 @@ namespace GNB.Services
                 .Configure(config)
                 .AddScoped<IRateService, RateService>()
                 .AddScoped<ITransactionService, TransactionService>()
+                .AddScoped<IRateResolver, RateResolver>()
+                .AddScoped<ICurrencyNormalizer, CurrencyNormalizer>()
                 .AddScoped<IQuietStoneApi, QuietStoneApi>();
         }
     }
