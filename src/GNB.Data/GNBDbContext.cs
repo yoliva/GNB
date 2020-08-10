@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using GNB.Core;
+using GNB.Core.Traces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,7 @@ namespace GNB.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -28,5 +29,7 @@ namespace GNB.Data
         public DbSet<Rate> Rates { get; set; }
 
         public DbSet<TransactionTrace> TransactionTraces { get; set; }
+
+        public DbSet<RateTrace> RateTraces { get; set; }
     }
 }

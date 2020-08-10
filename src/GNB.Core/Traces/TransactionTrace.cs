@@ -1,13 +1,7 @@
 ﻿using System;
 
-namespace GNB.Core
+namespace GNB.Core.Traces
 {
-    public enum TraceStatus
-    {
-        Pending,
-        Processed
-    }
-
     public class TransactionTrace : IAuditEntity
     {
         public string ID { get; set; } = Guid.NewGuid().ToString("N");

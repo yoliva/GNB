@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using GNB.Core;
 using GNB.Core.UnitOfWork;
 using GNB.Infrastructure.Capabilities;
-using GNB.QuietStone;
 using GNB.Services.Dtos;
 using Mapster;
 using Microsoft.Extensions.Logging;
@@ -19,7 +18,8 @@ namespace GNB.Services
         private readonly ICurrencyNormalizer _normalizer;
         private readonly ILogger<TransactionService> _logger;
 
-        public TransactionService(IUnitOfWork unitOfWork, ITransactionDataProvider transactionDataProvider, ICurrencyNormalizer normalizer, ILogger<TransactionService> logger)
+        public TransactionService(IUnitOfWork unitOfWork, ITransactionDataProvider transactionDataProvider,
+            ICurrencyNormalizer normalizer, ILogger<TransactionService> logger)
         {
             _unitOfWork = unitOfWork;
             _transactionDataProvider = transactionDataProvider;

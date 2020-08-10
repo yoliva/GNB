@@ -6,10 +6,12 @@ using System.Text;
 using GNB.Api.Helpers;
 using GNB.Infrastructure.Capabilities;
 using GNB.Data;
+using GNB.Jobs;
 using GNB.QuietStone;
 using GNB.Services;
 using GNB.Services.Mappings;
 using GNB.Services.QuietStone;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +38,9 @@ namespace GNB.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddHangfireServer();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "GNB API", Version = "v1"});
@@ -47,6 +52,7 @@ namespace GNB.Api
 
             services
                 .AddData()
+                .AddJobs()
                 .AddQuietStone(cfg => Configuration.GetSection("QuietStoneConfig").Bind(cfg))
                 .AddServices();
 
@@ -67,6 +73,9 @@ namespace GNB.Api
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseHangfireDashboard();
+            app.RegisterJobs();
 
             app.UseExceptionHandler(appBuilder => appBuilder.Use(async (context, next) =>
             {

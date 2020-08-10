@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using GNB.Core;
+using GNB.Core.Traces;
 using GNB.Core.UnitOfWork;
 using Mapster;
 using Microsoft.Extensions.Logging;
@@ -27,10 +28,16 @@ namespace GNB.QuietStone
         public async Task<List<Rate>> GetRates()
         {
             _logger.LogInformation("Attempt to retrieve current rates from QuietStone");
-
             var rates = await _quietStoneApi.GetRates();
-
             _logger.LogInformation("Rates were pulled from QuietStone");
+
+            await _unitOfWork.TransactionTraceRepository.AddAsync(new TransactionTrace
+            {
+                Status = TraceStatus.Pending,
+                TransactionList = JsonConvert.SerializeObject(rates)
+            });
+
+            _logger.LogInformation("Rate trace persisted");
 
             return rates.Select(r => r.Adapt<Rate>()).ToList();
         }
@@ -46,6 +53,7 @@ namespace GNB.QuietStone
                 Status = TraceStatus.Pending,
                 TransactionList = JsonConvert.SerializeObject(transactions)
             });
+
             _logger.LogInformation("Transactions trace persisted");
 
             return transactions.Select(r => r.Adapt<Transaction>()).ToList();
