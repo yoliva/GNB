@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GNB.Core;
 using GNB.Core.UnitOfWork;
 using GNB.Infrastructure.Capabilities;
 using GNB.QuietStone;
@@ -14,14 +15,14 @@ namespace GNB.Services
     public class TransactionService : ITransactionService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IQuietStoneApi _quietStoneApi;
+        private readonly ITransactionDataProvider _transactionDataProvider;
         private readonly ICurrencyNormalizer _normalizer;
         private readonly ILogger<TransactionService> _logger;
 
-        public TransactionService(IUnitOfWork unitOfWork, IQuietStoneApi quietStoneApi, ICurrencyNormalizer normalizer, ILogger<TransactionService> logger)
+        public TransactionService(IUnitOfWork unitOfWork, ITransactionDataProvider transactionDataProvider, ICurrencyNormalizer normalizer, ILogger<TransactionService> logger)
         {
             _unitOfWork = unitOfWork;
-            _quietStoneApi = quietStoneApi;
+            _transactionDataProvider = transactionDataProvider;
             _normalizer = normalizer;
             _logger = logger;
         }
@@ -30,15 +31,15 @@ namespace GNB.Services
         {
             try
             {
-                _logger.LogInformation("Attempt to retrieve transactions from QuietStone");
-                var liveData = await _quietStoneApi.GetTransactions();
-                _logger.LogInformation("Transactions successfully retrieved from QuietStone");
+                _logger.LogInformation("Attempt to retrieve live transactions");
+                var liveData = await _transactionDataProvider.GetTransactions();
+                _logger.LogInformation("Live transactions successfully retrieved");
 
                 return liveData.Select(x => x.Adapt<TransactionDto>());
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error fetching transactions from QuietStone. Returning data from DB instead", ex);
+                _logger.LogError("Error fetching live transactions. Returning data from DB instead", ex);
                 return _unitOfWork.TransactionRepository.GetAll()
                     .Select(x => x.Adapt<TransactionDto>())
                     .AsEnumerable();
@@ -47,7 +48,7 @@ namespace GNB.Services
 
         public async Task<IEnumerable<TransactionDto>> GetTransactionsBySku(string sku, string displayCurrency)
         {
-            _logger.LogInformation("Attempt to retrieve transactions from QuietStone by sku", new { sku });
+            _logger.LogInformation("Attempt to retrieve transactions by sku", new { sku });
 
             if (string.IsNullOrEmpty(sku))
                 throw new GNBException("Invalid sku provided", ErrorCode.InvalidSku);

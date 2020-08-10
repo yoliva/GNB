@@ -1,6 +1,7 @@
 ﻿using GNB.Services.QuietStone;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using GNB.Core;
 using GNB.QuietStone.Mappings;
 
 namespace GNB.QuietStone
@@ -14,6 +15,7 @@ namespace GNB.QuietStone
 
             return services
                 .Configure(config)
+                .AddScoped<ITransactionDataProvider, QuietStone>()
                 .AddScoped<IQuietStoneApi, QuietStoneApi>();
         }
     }

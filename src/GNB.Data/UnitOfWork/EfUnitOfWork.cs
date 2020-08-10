@@ -22,6 +22,8 @@ namespace GNB.Data.UnitOfWork
             _context.SaveChanges();
         }
 
+        public IRepository<TransactionTrace, string> TransactionTraceRepository { get; }
+
         public IRepository<Transaction, string> TransactionRepository => _transactionRepository ??= new Repository<Transaction, string>(_context);
 
         public IRepository<Rate, string> RateRepository => _rateRepository ??= new Repository<Rate, string>(_context);

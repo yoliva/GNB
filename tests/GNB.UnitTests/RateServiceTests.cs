@@ -17,7 +17,7 @@ namespace GNB.UnitTests
     public class RateServiceTests
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly Mock<IQuietStoneApi> _quietStoneApi;
+        private readonly Mock<ITransactionDataProvider> _transactionDataProvider;
         private readonly ILogger<RateService> _logger;
 
         public RateServiceTests()
@@ -31,16 +31,16 @@ namespace GNB.UnitTests
                     new Rate {ID = "3", To = KnownCurrencies.CAD, From = KnownCurrencies.USD, ChangeRate = 10.5m}
                 }.AsQueryable());
 
-            var quietStoneApiMock = new Mock<IQuietStoneApi>();
-            quietStoneApiMock.Setup(x => x.GetRates())
-                .Returns(Task.Run(() => new List<QuietStoneRateDto>
+            var transactionDataProviderMock = new Mock<ITransactionDataProvider>();
+            transactionDataProviderMock.Setup(x => x.GetRates())
+                .Returns(Task.Run(() => new List<Rate>
                 {
-                    new QuietStoneRateDto {To = KnownCurrencies.USD, From = KnownCurrencies.CAD, Rate = 50.5m},
-                    new QuietStoneRateDto {To = KnownCurrencies.CAD, From = KnownCurrencies.USD, Rate = 44.5m}
+                    new Rate {To = KnownCurrencies.USD, From = KnownCurrencies.CAD, ChangeRate = 50.5m},
+                    new Rate {To = KnownCurrencies.CAD, From = KnownCurrencies.USD, ChangeRate = 44.5m}
                 }));
 
             _unitOfWork = uowMock.Object;
-            _quietStoneApi = quietStoneApiMock;
+            _transactionDataProvider = transactionDataProviderMock;
             _logger = new Mock<ILogger<RateService>>().Object;
 
             MapsterConfig.Configure();
@@ -49,14 +49,14 @@ namespace GNB.UnitTests
         [Fact]
         public async void Rates_Are_From_DB_If_QuietStone_Fail_To_Return_Rates()
         {
-            _quietStoneApi.Setup(x => x.GetRates())
+            _transactionDataProvider.Setup(x => x.GetRates())
                 .Returns(Task.Run(() =>
                 {
                     throw new GNBException("some fake message", ErrorCode.UnableToRetrieveRatesFromQuietStone);
-                    return new List<QuietStoneRateDto>();
+                    return new List<Rate>();
                 }));
 
-            var service = new RateService(_unitOfWork, _quietStoneApi.Object, _logger);
+            var service = new RateService(_unitOfWork, _transactionDataProvider.Object, _logger);
             
             var rates = (await service.GetRates()).ToList();
 
@@ -69,7 +69,7 @@ namespace GNB.UnitTests
         [Fact]
         public async void Rates_Are_From_Properly_From_QuietStone()
         {
-            var service = new RateService(_unitOfWork, _quietStoneApi.Object, _logger);
+            var service = new RateService(_unitOfWork, _transactionDataProvider.Object, _logger);
 
             var rates = (await service.GetRates()).ToList();
 

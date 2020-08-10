@@ -6,6 +6,7 @@ namespace GNB.Core.UnitOfWork
     {
         IRepository<Transaction, string> TransactionRepository { get; }
         IRepository<Rate, string> RateRepository { get; }
+        IRepository<TransactionTrace, string> TransactionTraceRepository { get; }
 
         void Commit();
     }

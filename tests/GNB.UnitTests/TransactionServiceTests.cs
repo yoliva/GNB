@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using GNB.Core;
 using GNB.Core.UnitOfWork;
 using GNB.Infrastructure.Capabilities;
-using GNB.QuietStone;
-using GNB.QuietStone.Dtos;
 using GNB.Services;
 using GNB.Services.Dtos;
 using GNB.Services.Mappings;
@@ -22,8 +20,8 @@ namespace GNB.UnitTests
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICurrencyNormalizer _normalizer;
-        private readonly IQuietStoneApi _failingQuietStoneApi;
-        private readonly IQuietStoneApi _quietStoneApi;
+        private readonly ITransactionDataProvider _failingTransactionDataProvider;
+        private readonly ITransactionDataProvider _transactionDataProvider;
         private readonly ILogger<TransactionService> _logger;
 
         public TransactionServiceTests()
@@ -41,20 +39,20 @@ namespace GNB.UnitTests
                     _x10CadTransaction
                 }.AsQueryable());
 
-            var quietStoneApiMock = new Mock<IQuietStoneApi>();
-            quietStoneApiMock.Setup(x => x.GetTransactions())
-                .Returns(Task.Run(() => new List<QuietStoneTransactionDto>
+            var transactionDataProvider = new Mock<ITransactionDataProvider>();
+            transactionDataProvider.Setup(x => x.GetTransactions())
+                .Returns(Task.Run(() => new List<Transaction>
                 {
-                    new QuietStoneTransactionDto {Currency = KnownCurrencies.USD, Sku = "J385X", Amount = 18m},
-                    new QuietStoneTransactionDto {Currency = KnownCurrencies.CAD, Sku = "J385Y", Amount = 44.5m}
+                    new Transaction {Currency = KnownCurrencies.USD, Sku = "J385X", Amount = 18m},
+                    new Transaction {Currency = KnownCurrencies.CAD, Sku = "J385Y", Amount = 44.5m}
                 }));
 
-            var failingQuietStoneApi = new Mock<IQuietStoneApi>();
-            failingQuietStoneApi.Setup(x => x.GetTransactions())
+            var failingTransactionDataProvider = new Mock<ITransactionDataProvider>();
+            failingTransactionDataProvider.Setup(x => x.GetTransactions())
                 .Returns(Task.Run(() =>
                 {
                     throw new GNBException("some fake message", ErrorCode.UnableToRetrieveTransactionsFromQuietStone);
-                    return new List<QuietStoneTransactionDto>();
+                    return new List<Transaction>();
                 }));
 
             var normalizer = new Mock<ICurrencyNormalizer>();
@@ -74,8 +72,8 @@ namespace GNB.UnitTests
 
             _unitOfWork = uowMock.Object;
             _normalizer = normalizer.Object;
-            _failingQuietStoneApi = failingQuietStoneApi.Object;
-            _quietStoneApi = quietStoneApiMock.Object;
+            _failingTransactionDataProvider = failingTransactionDataProvider.Object;
+            _transactionDataProvider = transactionDataProvider.Object;
             _logger = new Mock<ILogger<TransactionService>>().Object;
 
             MapsterConfig.Configure();
@@ -84,7 +82,7 @@ namespace GNB.UnitTests
         [Fact]
         public async void Transactions_Are_Returned_From_Db_If_QuietStone_Fail()
         {
-            var service = new TransactionService(_unitOfWork, _failingQuietStoneApi, _normalizer, _logger);
+            var service = new TransactionService(_unitOfWork, _failingTransactionDataProvider, _normalizer, _logger);
 
             var transactions = (await service.GetTransactions()).ToList();
 
@@ -99,7 +97,7 @@ namespace GNB.UnitTests
         [Fact]
         public async void Transactions_Are_Filtered_By_Sku()
         {
-            var service = new TransactionService(_unitOfWork, _failingQuietStoneApi, _normalizer, _logger);
+            var service = new TransactionService(_unitOfWork, _failingTransactionDataProvider, _normalizer, _logger);
 
             var transactions = (await service.GetTransactionsBySku("AX10", KnownCurrencies.USD))
                 .ToList();
@@ -115,7 +113,7 @@ namespace GNB.UnitTests
         [Fact]
         public async void Transaction_Are_Returned_From_QuietStone()
         {
-            var service = new TransactionService(_unitOfWork, _quietStoneApi, _normalizer, _logger);
+            var service = new TransactionService(_unitOfWork, _transactionDataProvider, _normalizer, _logger);
 
             var transactions = (await service.GetTransactions()).ToList();
 
