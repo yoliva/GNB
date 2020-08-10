@@ -24,7 +24,7 @@ namespace GNB.Api.Controllers
 
         [HttpGet]
         [Route("sku/{sku}")]
-        public async Task<ActionResult> GetBySku(string sku, string currency = KnownCurrencies.Euro)
+        public async Task<ActionResult> GetBySku(string sku, string currency = KnownCurrencies.EURO)
         {
             return Ok(await _transactionService.GetTransactionsBySku(sku, currency));
         }
