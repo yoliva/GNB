@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using GNB.Api.Helpers;
 using GNB.Infrastructure.Capabilities;
 using GNB.Data;
 using GNB.Services;
@@ -36,18 +37,20 @@ namespace GNB.Api
         {
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "GNB API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "GNB API", Version = "v1"});
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-                
+
             MapsterConfig.Configure();
 
             services.AddServices(cfg => Configuration.GetSection("QuietStoneConfig").Bind(cfg));
 
             services.AddData();
+
+            services.AddCors(c => { c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin()); });
 
             services.AddDbContext<GNBDbContext>(
                 options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
@@ -65,7 +68,7 @@ namespace GNB.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseExceptionHandler(app => app.Use(async (context, next) =>
+            app.UseExceptionHandler(appBuilder => appBuilder.Use(async (context, next) =>
             {
                 var ex = context.Features.Get<IExceptionHandlerFeature>();
 
@@ -73,7 +76,7 @@ namespace GNB.Api
 
                 if (ex.Error is GNBException exception)
                 {
-                    context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                    context.Response.StatusCode = (int) ExceptionToHttpStatusCodeMap.Map(exception.GetType());
                     await context.Response.WriteAsync(JsonConvert.SerializeObject(new
                     {
                         exception.Code,
@@ -92,10 +95,7 @@ namespace GNB.Api
 
             app.UseSwagger();
 
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "GNB API V1");
-            });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "GNB API V1"); });
 
             app.UseHttpsRedirection();
 
@@ -103,9 +103,12 @@ namespace GNB.Api
 
             app.UseAuthorization();
 
+            app.UseCors(options => options.AllowAnyOrigin());
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapRazorPages();
             });
         }
     }

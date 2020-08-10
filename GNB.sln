@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GNB.Services", "src\GNB.Ser
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GNB.UnitTests", "tests\GNB.UnitTests\GNB.UnitTests.csproj", "{19545E48-F08C-47AE-8091-447116DBD787}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GNB.Api", "src\GNB.Api\GNB.Api.csproj", "{69ED6AB0-DD96-4672-B652-6D204A2D6728}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GNB.Api", "src\GNB.Api\GNB.Api.csproj", "{69ED6AB0-DD96-4672-B652-6D204A2D6728}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
