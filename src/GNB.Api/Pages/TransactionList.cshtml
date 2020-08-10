@@ -1,0 +1,12 @@
+﻿@page
+@model GNB.Api.Pages.TransactionListModel
+@{
+    ViewData["Title"] = "TransactionList";
+}
+
+<h2>TransactionList</h2>
+@foreach (var t in @Model.Transactions)
+{
+    <p>@t.Sku @t.Currency @t.Amount</p>
+}
+

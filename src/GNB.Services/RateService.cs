@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GNB.Core;
 using GNB.Core.UnitOfWork;
 using GNB.Infrastructure.Capabilities;
+using GNB.QuietStone;
 using GNB.Services.Dtos;
-using GNB.Services.QuietStone;
 using Mapster;
 using Microsoft.Extensions.Logging;
 
@@ -13,13 +14,13 @@ namespace GNB.Services
     public class RateService : IRateService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IQuietStoneApi _quietStoneApi;
+        private readonly ITransactionDataProvider _transactionDataProvider;
         private readonly ILogger<RateService> _logger;
 
-        public RateService(IUnitOfWork unitOfWork, IQuietStoneApi quietStoneApi, ILogger<RateService> logger)
+        public RateService(IUnitOfWork unitOfWork, ITransactionDataProvider transactionDataProvider, ILogger<RateService> logger)
         {
             _unitOfWork = unitOfWork;
-            _quietStoneApi = quietStoneApi;
+            _transactionDataProvider = transactionDataProvider;
             _logger = logger;
         }
 
@@ -29,7 +30,7 @@ namespace GNB.Services
             {
                 _logger.LogInformation("Attempt to retrieve rates from QuietStone");
 
-                var liveData = await _quietStoneApi.GetRates();
+                var liveData = await _transactionDataProvider.GetRates();
 
                 _logger.LogInformation("Rates successfully retrieved from QuietStone");
 

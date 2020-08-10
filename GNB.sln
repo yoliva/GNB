@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GNB.Services", "src\GNB.Ser
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GNB.UnitTests", "tests\GNB.UnitTests\GNB.UnitTests.csproj", "{19545E48-F08C-47AE-8091-447116DBD787}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GNB.Api", "src\GNB.Api\GNB.Api.csproj", "{69ED6AB0-DD96-4672-B652-6D204A2D6728}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GNB.Api", "src\GNB.Api\GNB.Api.csproj", "{69ED6AB0-DD96-4672-B652-6D204A2D6728}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GNB.QuietStone", "src\GNB.QuietStone\GNB.QuietStone.csproj", "{F45FCCC3-A230-400F-AD94-1993E5F7F611}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{69ED6AB0-DD96-4672-B652-6D204A2D6728}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69ED6AB0-DD96-4672-B652-6D204A2D6728}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69ED6AB0-DD96-4672-B652-6D204A2D6728}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F45FCCC3-A230-400F-AD94-1993E5F7F611}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F45FCCC3-A230-400F-AD94-1993E5F7F611}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F45FCCC3-A230-400F-AD94-1993E5F7F611}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F45FCCC3-A230-400F-AD94-1993E5F7F611}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

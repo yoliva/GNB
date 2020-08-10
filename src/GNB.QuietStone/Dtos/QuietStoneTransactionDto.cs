@@ -1,4 +1,4 @@
-﻿namespace GNB.Services.QuietStone.Dtos
+﻿namespace GNB.QuietStone.Dtos
 {
     public class QuietStoneTransactionDto
     {

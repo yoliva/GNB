@@ -1,9 +1,8 @@
 ﻿using GNB.Core;
-using GNB.Services.Dtos;
-using GNB.Services.QuietStone.Dtos;
+using GNB.QuietStone.Dtos;
 using Mapster;
 
-namespace GNB.Services.Mappings
+namespace GNB.QuietStone.Mappings
 {
     public static class QuietStoneTransactionMapping
     {
