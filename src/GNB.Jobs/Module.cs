@@ -18,8 +18,8 @@ namespace GNB.Jobs
     {
         public static void RegisterJobs()
         {
-            RecurringJob.AddOrUpdate<ITransactionImporter>( x =>  x.Import(), "*/1 * * * *");
-            RecurringJob.AddOrUpdate<IRatesImporter>(x => x.Import(), "*/1 * * * *");
+            RecurringJob.AddOrUpdate<ITransactionImporter>(x => x.Import(), "*/5 * * * *");
+            RecurringJob.AddOrUpdate<IRatesImporter>(x => x.Import(), "*/3 * * * *");
         }
     }
 }
