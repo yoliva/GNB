@@ -35,9 +35,9 @@ namespace GNB.UnitTests
         [InlineData("EUR", "USD", 1.359)]
         [InlineData("EUR", "CAD", 1.366)]
         [InlineData("UYU", "CUC", 0.6)]
-        [InlineData("USD", "CAD", 1.005376)]
-        [InlineData("USD", "JPY", 5.52)]
-        [InlineData("GBP", "JPY", 2.745)]
+        [InlineData("USD", "CAD", 1.01)]
+        [InlineData("USD", "JPY", 5.55)]
+        [InlineData("GBP", "JPY", 2.78)]
         public void Can_Resolve_Exchanges(string from, string to, decimal rate)
         {
             var rates = _rateResolver
