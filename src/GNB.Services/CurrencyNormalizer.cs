@@ -41,6 +41,10 @@ namespace GNB.Services
                 .ToList();
 
             var ratesDefinition = _rateResolver.GetRatesDefinition(missingRates, rates);
+
+            if (ratesDefinition.Keys.All(x => x.from != currency))
+                throw new GNBException("Invalid currency provided", ErrorCode.InvalidCurrency);
+
             var normalizedTransactions = transactions.Select(t => new TransactionDto
             {
                 ID = t.ID,
