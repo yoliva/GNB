@@ -35,5 +35,11 @@ namespace GNB.Data.Repositories
         {
             _context.Set<TEntity>().RemoveRange(entities);
         }
+
+        public async Task Truncate()
+        {
+            var tableName = typeof(TEntity).Name;
+            await _context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE @tableName", tableName);
+        }
     }
 }

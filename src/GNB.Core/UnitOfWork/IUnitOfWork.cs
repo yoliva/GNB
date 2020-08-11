@@ -1,4 +1,5 @@
-﻿using GNB.Core.Repositories;
+﻿using System.Threading.Tasks;
+using GNB.Core.Repositories;
 using GNB.Core.Traces;
 
 namespace GNB.Core.UnitOfWork
@@ -9,7 +10,6 @@ namespace GNB.Core.UnitOfWork
         IRepository<Rate, string> RateRepository { get; }
         IRepository<TransactionTrace, string> TransactionTraceRepository { get; }
         IRepository<RateTrace, string> RateTraceRepository { get; }
-
-        void Commit();
+        Task Commit();
     }
 }

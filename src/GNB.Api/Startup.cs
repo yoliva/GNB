@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using GNB.Api.Filters;
 using GNB.Api.Helpers;
 using GNB.Infrastructure.Capabilities;
 using GNB.Data;
@@ -43,7 +44,7 @@ namespace GNB.Api
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "GNB API", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "GNB API", Version = "v1" });
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -56,12 +57,16 @@ namespace GNB.Api
                 .AddQuietStone(cfg => Configuration.GetSection("QuietStoneConfig").Bind(cfg))
                 .AddServices();
 
-            services.AddCors(c => { c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin()); });
+            services
+                .AddCors(c => { c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin()); });
 
-            services.AddDbContext<GNBDbContext>(
-                options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
+            services
+                .AddDbContext<GNBDbContext>(options => options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection"),
                     x => x.MigrationsAssembly(typeof(GNBDbContext).Assembly.FullName)));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services
+                .AddMvc(opt => opt.Filters.Add(typeof(UnitOfWorkCommitChangesFilter)))
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddControllers();
         }
@@ -75,7 +80,7 @@ namespace GNB.Api
             }
 
             app.UseHangfireDashboard();
-            app.RegisterJobs();
+            BgJobs.RegisterJobs();
 
             app.UseExceptionHandler(appBuilder => appBuilder.Use(async (context, next) =>
             {
@@ -85,7 +90,7 @@ namespace GNB.Api
 
                 if (ex.Error is GNBException exception)
                 {
-                    context.Response.StatusCode = (int) ExceptionToHttpStatusCodeMap.Map(exception.GetType());
+                    context.Response.StatusCode = (int)ExceptionToHttpStatusCodeMap.Map(exception.GetType());
                     await context.Response.WriteAsync(JsonConvert.SerializeObject(new
                     {
                         exception.Code,

@@ -1,4 +1,5 @@
-﻿using GNB.Core;
+﻿using System.Threading.Tasks;
+using GNB.Core;
 using GNB.Core.Repositories;
 using GNB.Core.Traces;
 using GNB.Core.UnitOfWork;
@@ -20,11 +21,11 @@ namespace GNB.Data.UnitOfWork
             _context = context;
         }
 
-        public void Commit()
-        {
-            _context.SaveChanges();
-        }
         public IRepository<RateTrace, string> RateTraceRepository => _rateTraceRepository ??= new Repository<RateTrace, string>(_context);
+        public async Task Commit()
+        {
+            await _context.SaveChangesAsync();
+        }
 
         public IRepository<TransactionTrace, string> TransactionTraceRepository => _transactionTrace ??= new Repository<TransactionTrace, string>(_context);
 
