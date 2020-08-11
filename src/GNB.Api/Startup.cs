@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Net;
 using System.Reflection;
 using System.Text;
 using GNB.Api.Filters;
@@ -10,8 +9,6 @@ using GNB.Data;
 using GNB.Jobs;
 using GNB.QuietStone;
 using GNB.Services;
-using GNB.Services.Mappings;
-using GNB.Services.QuietStone;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -65,7 +62,7 @@ namespace GNB.Api
                     Configuration.GetConnectionString("DefaultConnection"),
                     x => x.MigrationsAssembly(typeof(GNBDbContext).Assembly.FullName)));
             services
-                .AddMvc(opt => opt.Filters.Add(typeof(UnitOfWorkCommitChangesFilter)))
+                .AddControllersWithViews(opt => opt.Filters.Add(typeof(UnitOfWorkCommitChangesFilter)))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddControllers();
@@ -86,25 +83,33 @@ namespace GNB.Api
             {
                 var ex = context.Features.Get<IExceptionHandlerFeature>();
 
-                context.Response.ContentType = "application/json";
-
-                if (ex.Error is GNBException exception)
+                if (context.Request.Path.StartsWithSegments("/api"))
                 {
-                    context.Response.StatusCode = (int)ExceptionToHttpStatusCodeMap.Map(exception.GetType());
-                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new
+                    context.Response.ContentType = "application/json";
+
+                    if (ex.Error is GNBException exception)
                     {
-                        exception.Code,
-                        exception.Message
-                    }), Encoding.UTF8).ConfigureAwait(false);
+                        context.Response.StatusCode = (int) ExceptionToHttpStatusCodeMap.Map(exception.GetType());
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new
+                        {
+                            exception.Code,
+                            exception.Message
+                        }), Encoding.UTF8).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new
+                        {
+                            Code = ErrorCode.UnexpectedError,
+                            Message = "Ups, something went wrong. It's not you, it's us."
+                        }), Encoding.UTF8).ConfigureAwait(false);
+                    }
                 }
                 else
                 {
-                    await context.Response.WriteAsync(JsonConvert.SerializeObject(new
-                    {
-                        Code = ErrorCode.UnexpectedError,
-                        Message = "Ups, something went wrong. It's not you, it's us."
-                    }), Encoding.UTF8).ConfigureAwait(false);
+                    throw ex.Error;
                 }
+
             }));
 
             app.UseSwagger();
@@ -122,7 +127,10 @@ namespace GNB.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapRazorPages();
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
             });
         }
     }

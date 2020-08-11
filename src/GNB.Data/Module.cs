@@ -1,7 +1,6 @@
 ﻿using GNB.Core.UnitOfWork;
 using GNB.Data.UnitOfWork;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace GNB.Data
 {
@@ -9,9 +8,8 @@ namespace GNB.Data
     {
         public static IServiceCollection AddData(this IServiceCollection services)
         {
-            services.TryAddScoped<IUnitOfWork, EfUnitOfWork>();
-
-            return services;
+            return services
+                .AddScoped<IUnitOfWork,EfUnitOfWork>();
         }
     }
 }

@@ -4,12 +4,12 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using GNB.Infrastructure.Capabilities;
-using GNB.QuietStone;
 using GNB.QuietStone.Dtos;
+using GNB.Services.QuietStone;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace GNB.Services.QuietStone
+namespace GNB.QuietStone
 {
     public class QuietStoneApi : IQuietStoneApi
     {

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using GNB.Core;
 using GNB.Core.Traces;
 using GNB.Core.UnitOfWork;
-using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;

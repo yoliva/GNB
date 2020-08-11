@@ -1,8 +1,4 @@
-﻿@page
-@model GNB.Api.Pages.TransactionListModel
-@{
-    ViewData["Title"] = "TransactionList";
-}
+﻿@model GNB.Api.Models.TransactionList
 
 <!doctype html>
 <html lang="en">
@@ -17,10 +13,10 @@
         <h3>Transactions by Sku</h3>
     </div>
 
-    <form asp-page="./Index" method="get">
+    <form method="get">
         <div class="form-actions no-color">
             <p>
-                <input type="text" name="sku" value="@Model.Sku" placeholder="Search by sku" />
+                <input type="text" name="sku" value="@Model?.Sku" placeholder="Search by sku" />
                 <input type="submit" value="Search" class="btn btn-primary" />
             </p>
         </div>
