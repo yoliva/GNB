@@ -105,6 +105,11 @@ namespace GNB.Api
                         }), Encoding.UTF8).ConfigureAwait(false);
                     }
                 }
+                else
+                {
+                    throw ex.Error;
+                }
+
             }));
 
             app.UseSwagger();
