@@ -9,15 +9,17 @@ namespace GNB.Jobs
         public static IServiceCollection AddJobs(this IServiceCollection services)
         {
             return services
-                .AddScoped<ITransactionImporter, TransactionImporter>();
+                .AddScoped<ITransactionImporter, TransactionImporter>()
+                .AddScoped<IRatesImporter, RatesImporter>();
         }
+    }
 
-        public static IApplicationBuilder RegisterJobs(this IApplicationBuilder appBuilder)
+    public static class BgJobs
+    {
+        public static void RegisterJobs()
         {
-            RecurringJob.AddOrUpdate<ITransactionImporter>(x => x.Import(), "*/5 * * * *");
-            RecurringJob.AddOrUpdate<IRatesImporter>(x => x.Import(), "*/3 * * * *");
-
-            return appBuilder;
+            RecurringJob.AddOrUpdate<ITransactionImporter>( x =>  x.Import(), "*/1 * * * *");
+            RecurringJob.AddOrUpdate<IRatesImporter>(x => x.Import(), "*/1 * * * *");
         }
     }
 }

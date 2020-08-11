@@ -31,10 +31,10 @@ namespace GNB.QuietStone
             var rates = await _quietStoneApi.GetRates();
             _logger.LogInformation("Rates were pulled from QuietStone");
 
-            await _unitOfWork.TransactionTraceRepository.AddAsync(new TransactionTrace
+            await _unitOfWork.RateTraceRepository.AddAsync(new RateTrace
             {
                 Status = TraceStatus.Pending,
-                TransactionList = JsonConvert.SerializeObject(rates)
+                RateList = JsonConvert.SerializeObject(rates)
             });
 
             _logger.LogInformation("Rate trace persisted");

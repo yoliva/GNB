@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GNB.Core;
 using GNB.Core.Traces;
 using GNB.Core.UnitOfWork;
+using Hangfire;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -12,43 +16,52 @@ namespace GNB.Jobs
     {
         private const int BATCH_SIZE = 5000;
 
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<TransactionImporter> _logger;
+        private readonly IServiceProvider _serviceProvider;
 
-        public TransactionImporter(IUnitOfWork unitOfWork, ILogger<TransactionImporter> logger)
+        public TransactionImporter(IServiceProvider serviceProvider)
         {
-            _unitOfWork = unitOfWork;
-            _logger = logger;
+            _serviceProvider = serviceProvider;
         }
 
+        [AutomaticRetry(Attempts = 0)]
         public void Import()
         {
-            _logger.LogInformation("Execution request");
-
-            var lastTrace = _unitOfWork.TransactionTraceRepository.GetAll()
-                .OrderByDescending(x => x.LastUpdatedAt)
-                .FirstOrDefault();
-
-            if (lastTrace is null)
+            Task.Run(async () =>
             {
-                _logger.LogInformation("No trace pending found. Execution skipped");
-                return;
-            }
+                using var scope = _serviceProvider.CreateScope();
+                var logger = scope.ServiceProvider.GetService<ILogger<TransactionImporter>>();
+                var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
 
-            var entries = JsonConvert.DeserializeObject<List<Transaction>>(lastTrace.TransactionList);
-            for (int i = 0; i <= entries.Count/BATCH_SIZE; i++)
-            {
-                _unitOfWork.TransactionRepository.AddRangeAsync(entries.Skip(BATCH_SIZE * i).Take(BATCH_SIZE));
-                _unitOfWork.Commit();
-            }
+                logger.LogInformation("Execution request");
 
-            lastTrace.Status = TraceStatus.Processed;
-            _unitOfWork.Commit();
+                var lastTrace = unitOfWork.TransactionTraceRepository.GetAll()
+                    .OrderByDescending(x => x.CreatedAt)
+                    .FirstOrDefault();
 
-            _logger.LogInformation("Execution completed", new
-            {
-                TransactionCount = entries.Count
-            });
+                if (lastTrace is null || lastTrace.Status != TraceStatus.Pending)
+                {
+                    logger.LogInformation("No transaction trace pending found. Execution skipped");
+                    return;
+                }
+
+                //await _unitOfWork.TransactionRepository.Truncate();
+
+                var entries = JsonConvert.DeserializeObject<List<Transaction>>(lastTrace.TransactionList);
+                for (int i = 0; i <= entries.Count / BATCH_SIZE; i++)
+                {
+                    await unitOfWork.TransactionRepository.AddRangeAsync(entries.Skip(BATCH_SIZE * i)
+                        .Take(BATCH_SIZE));
+                    await unitOfWork.Commit();
+                }
+
+                lastTrace.Status = TraceStatus.Processed;
+                await unitOfWork.Commit();
+
+                logger.LogInformation("Execution completed", new
+                {
+                    TransactionCount = entries.Count
+                });
+            }).Wait();
         }
     }
 }

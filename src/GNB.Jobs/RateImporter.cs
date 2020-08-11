@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GNB.Core.Traces;
 using GNB.Core.UnitOfWork;
+using Hangfire;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -9,39 +13,50 @@ namespace GNB.Jobs
 {
     public class RatesImporter : IRatesImporter
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly ILogger<RatesImporter> _logger;
+        private readonly IServiceProvider _serviceProvider;
 
-        public RatesImporter(IUnitOfWork unitOfWork, ILogger<RatesImporter> logger)
+        public RatesImporter(IServiceProvider serviceProvider)
         {
-            _unitOfWork = unitOfWork;
-            _logger = logger;
+            _serviceProvider = serviceProvider;
         }
 
+        [AutomaticRetry(Attempts = 0)]
         public void Import()
         {
-            _logger.LogInformation("Execution request");
-
-            var lastTrace = _unitOfWork.RateTraceRepository.GetAll()
-                .OrderByDescending(x => x.LastUpdatedAt)
-                .FirstOrDefault();
-
-            if (lastTrace is null || lastTrace.Status == TraceStatus.Pending)
+            Task.Run(async () =>
             {
-                _logger.LogInformation("No rate pending found. Execution skipped");
-                return;
-            }
+                using var scope = _serviceProvider.CreateScope();
+                var logger = scope.ServiceProvider.GetService<ILogger<TransactionImporter>>();
+                var unitOfWork = scope.ServiceProvider.GetService<IUnitOfWork>();
 
-            var entries = JsonConvert.DeserializeObject<List<RateTrace>>(lastTrace.RateList);
-            _unitOfWork.RateTraceRepository.AddRangeAsync(entries);
-            lastTrace.Status = TraceStatus.Processed;
+                logger.LogInformation("Execution request");
 
-            _unitOfWork.Commit();
+                var lastTrace = unitOfWork.RateTraceRepository.GetAll()
+                    .OrderByDescending(x => x.CreatedAt)
+                    .FirstOrDefault();
 
-            _logger.LogInformation("Execution completed", new
-            {
-                RateCount = entries.Count
-            });
+                if (lastTrace is null || lastTrace.Status != TraceStatus.Pending)
+                {
+                    logger.LogInformation("No rate trace pending found. Execution skipped");
+                    return;
+                }
+
+                await unitOfWork.RateTraceRepository.Truncate();
+                await unitOfWork.Commit();
+                logger.LogInformation("Old rates truncated");
+
+                var entries = JsonConvert.DeserializeObject<List<RateTrace>>(lastTrace.RateList);
+                await unitOfWork.RateTraceRepository.AddRangeAsync(entries);
+                lastTrace.Status = TraceStatus.Processed;
+
+                await unitOfWork.Commit();
+
+                logger.LogInformation("Execution completed", new
+                {
+                    RateCount = entries.Count
+                });
+            }).Wait();
+
         }
     }
 }

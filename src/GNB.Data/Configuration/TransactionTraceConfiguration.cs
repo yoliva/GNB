@@ -1,4 +1,4 @@
-﻿using GNB.Core;
+﻿using GNB.Core.Traces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
