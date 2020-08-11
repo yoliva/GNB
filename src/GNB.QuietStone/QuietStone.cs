@@ -45,7 +45,6 @@ namespace GNB.QuietStone
 
         public async Task<List<Transaction>> GetTransactions()
         {
-            throw new Exception();
             _logger.LogInformation("Attempt to retrieve transactions from QuietStone");
             var transactions = await _quietStoneApi.GetTransactions();
             _logger.LogInformation("Transactions were pulled from QuietStone");

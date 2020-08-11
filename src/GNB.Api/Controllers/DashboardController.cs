@@ -17,7 +17,7 @@ namespace GNB.Api.Controllers
             _transactionService = transactionService;
         }
 
-        public async Task<IActionResult> Index(string sku, string currency = KnownCurrencies.EURO)
+        public async Task<IActionResult> Index(string sku, string currency = KnownCurrencies.EUR)
         {
             return View(new TransactionList
             {
