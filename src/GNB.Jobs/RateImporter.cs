@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GNB.Core;
 using GNB.Core.Traces;
 using GNB.Core.UnitOfWork;
 using Hangfire;
@@ -20,7 +21,6 @@ namespace GNB.Jobs
             _serviceProvider = serviceProvider;
         }
 
-        [AutomaticRetry(Attempts = 0)]
         public void Import()
         {
             Task.Run(async () =>
@@ -41,12 +41,11 @@ namespace GNB.Jobs
                     return;
                 }
 
-                await unitOfWork.RateTraceRepository.Truncate();
-                await unitOfWork.Commit();
+                await unitOfWork.RateRepository.Truncate();
                 logger.LogInformation("Old rates truncated");
 
-                var entries = JsonConvert.DeserializeObject<List<RateTrace>>(lastTrace.RateList);
-                await unitOfWork.RateTraceRepository.AddRangeAsync(entries);
+                var entries = JsonConvert.DeserializeObject<List<Rate>>(lastTrace.RateList);
+                await unitOfWork.RateRepository.AddRangeAsync(entries);
                 lastTrace.Status = TraceStatus.Processed;
 
                 await unitOfWork.Commit();

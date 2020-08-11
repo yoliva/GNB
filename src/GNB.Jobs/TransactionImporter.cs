@@ -23,7 +23,6 @@ namespace GNB.Jobs
             _serviceProvider = serviceProvider;
         }
 
-        [AutomaticRetry(Attempts = 0)]
         public void Import()
         {
             Task.Run(async () =>
@@ -44,7 +43,8 @@ namespace GNB.Jobs
                     return;
                 }
 
-                //await _unitOfWork.TransactionRepository.Truncate();
+                await unitOfWork.TransactionRepository.Truncate();
+                logger.LogInformation("Old transactions truncated");
 
                 var entries = JsonConvert.DeserializeObject<List<Transaction>>(lastTrace.TransactionList);
                 for (int i = 0; i <= entries.Count / BATCH_SIZE; i++)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GNB.Core;
@@ -36,9 +37,9 @@ namespace GNB.Services
 
                 return liveData.Select(x => x.Adapt<RateDto>());
             }
-            catch (GNBException bnbEx)
+            catch (Exception ex)
             {
-                _logger.LogError("Error fetching rates from QuietStone. Returning data from DB instead", bnbEx);
+                _logger.LogError("Error fetching rates from QuietStone. Returning data from DB instead", ex);
                 return _unitOfWork.RateRepository.GetAll().Select(x => x.Adapt<RateDto>());
             }
         }

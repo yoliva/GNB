@@ -28,7 +28,6 @@ namespace GNB.QuietStone
 
         public async Task<List<Rate>> GetRates()
         {
-            throw new Exception();
             _logger.LogInformation("Attempt to retrieve current rates from QuietStone");
             var rates = (await _quietStoneApi.GetRates()).Select(x => x.Adapt<Rate>());
             _logger.LogInformation("Rates were pulled from QuietStone");
@@ -46,7 +45,6 @@ namespace GNB.QuietStone
 
         public async Task<List<Transaction>> GetTransactions()
         {
-            throw new Exception();
             _logger.LogInformation("Attempt to retrieve transactions from QuietStone");
             var transactions = await _quietStoneApi.GetTransactions();
             _logger.LogInformation("Transactions were pulled from QuietStone");
