@@ -17,14 +17,14 @@ namespace GNB.Api.Controllers
             _transactionService = transactionService;
         }
 
-        public async Task<IActionResult> Index(string sku, string currency = KnownCurrencies.EURO)
+        public async Task<IActionResult> Index(string sku, string currency = KnownCurrencies.EUR)
         {
             return View(new TransactionList
             {
                 Sku = sku,
                 Transactions = string.IsNullOrEmpty(sku)
                     ? Enumerable.Empty<TransactionDto>()
-                    : await _transactionService.GetTransactionsBySku(sku, currency)
+                    : await _transactionService.GetTransactionsBySku(sku, currency.ToUpper())
             });
         }
     }

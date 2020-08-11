@@ -29,10 +29,10 @@ namespace GNB.UnitTests
                 .Setup(x => x.GetRatesDefinition(It.IsAny<List<(string, string)>>(), It.IsAny<List<RateDto>>()))
                 .Returns(new Dictionary<(string, string), decimal>()
                 {
-                    {(KnownCurrencies.EURO, KnownCurrencies.CAD), 0.99m},
-                    {(KnownCurrencies.CAD, KnownCurrencies.EURO), 1.01m},
-                    {(KnownCurrencies.USD, KnownCurrencies.EURO), 1.47m},
-                    {(KnownCurrencies.EURO, KnownCurrencies.USD), 0.68m},
+                    {(KnownCurrencies.EUR, KnownCurrencies.CAD), 0.99m},
+                    {(KnownCurrencies.CAD, KnownCurrencies.EUR), 1.01m},
+                    {(KnownCurrencies.USD, KnownCurrencies.EUR), 1.47m},
+                    {(KnownCurrencies.EUR, KnownCurrencies.USD), 0.68m},
                     {(KnownCurrencies.CAD, KnownCurrencies.USD), 0.76m},
                     {(KnownCurrencies.USD, KnownCurrencies.CAD), 1.32m},
                 });
@@ -44,7 +44,7 @@ namespace GNB.UnitTests
             {
                 new TransactionDto {Amount = 25.10m, Currency = KnownCurrencies.CAD, Sku = "AX10"},
                 new TransactionDto {Amount = 12.50m, Currency = KnownCurrencies.USD, Sku = "AX11"},
-                new TransactionDto {Amount = 6.99m, Currency = KnownCurrencies.EURO, Sku = "AX12"}
+                new TransactionDto {Amount = 6.99m, Currency = KnownCurrencies.EUR, Sku = "AX12"}
             };
         }
 

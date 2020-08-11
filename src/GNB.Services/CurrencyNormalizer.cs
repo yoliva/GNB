@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GNB.Infrastructure.Capabilities;
 using GNB.Services.Dtos;
 using Microsoft.Extensions.Logging;
 using static GNB.Services.Utils;
@@ -22,6 +23,9 @@ namespace GNB.Services
 
         public async Task<IEnumerable<TransactionDto>> Normalize(string currency, IEnumerable<TransactionDto> transactions)
         {
+            if (string.IsNullOrEmpty(currency))
+                throw new GNBException("Currency can not be empty", ErrorCode.InvalidCurrency);
+
             _logger.LogInformation("Normalizing transactions", new
             {
                 currency,
@@ -37,6 +41,10 @@ namespace GNB.Services
                 .ToList();
 
             var ratesDefinition = _rateResolver.GetRatesDefinition(missingRates, rates);
+
+            if (ratesDefinition.Keys.All(x => x.from != currency))
+                throw new GNBException("Invalid currency provided", ErrorCode.InvalidCurrency);
+
             var normalizedTransactions = transactions.Select(t => new TransactionDto
             {
                 ID = t.ID,

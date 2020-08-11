@@ -10,6 +10,8 @@ namespace GNB.QuietStone.Mappings
         {
             TypeAdapterConfig.GlobalSettings
                 .NewConfig<QuietStoneRateDto, Rate>()
+                .Map(x => x.From, x => x.From.ToUpper())
+                .Map(x => x.To, x => x.To.ToUpper())
                 .Map(x => x.ChangeRate, x => x.Rate);
         }
     }

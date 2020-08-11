@@ -1,0 +1,45 @@
+﻿
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <style type="text/css">
+        body {
+            background: #eee;
+        }
+
+        .container {
+            padding: 5%;
+        }
+
+        .lead {
+            background: #fff;
+            padding: 4%;
+        }
+    </style>
+</head>
+<body class="container">
+    <div class="page-wrap d-flex flex-row align-items-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-12 text-center">
+                    <span class="display-1 d-block">Error</span>
+                    <div class="mb-4 lead">Oops! Something went wrong with your request.</div>
+                    @if (!string.IsNullOrEmpty(Model.ErrorCode))
+                    {
+                        <h3>Status Code: <strong><code>@Model.ErrorCode</code></strong></h3>
+                    }
+                    <a href="@Url.Action("Index","Dashboard")">
+                        Return to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
