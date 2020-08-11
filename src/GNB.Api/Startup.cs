@@ -101,13 +101,13 @@ namespace GNB.Api
                         await context.Response.WriteAsync(JsonConvert.SerializeObject(new
                         {
                             Code = ErrorCode.UnexpectedError,
-                            Message = "Ups, something went wrong. It's not you, it's us."
+                            Message = "Oops, something went wrong. It's not you, it's us."
                         }), Encoding.UTF8).ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    throw ex.Error;
+                    context.Response.Redirect($"Errors?id={context.Response.StatusCode}");
                 }
 
             }));
