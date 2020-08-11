@@ -10,6 +10,8 @@ namespace GNB.Data.Configuration
         {
             builder.HasKey(x => x.ID);
 
+            builder.Ignore(x => x.TableName);
+
             builder.Property(x => x.From).HasMaxLength(10).IsRequired();
             builder.Property(x => x.To).HasMaxLength(10).IsRequired();
             builder.Property(x => x.ChangeRate).HasColumnType("decimal(12,3)").IsRequired();

@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using GNB.Core;
 using GNB.Core.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace GNB.Data.Repositories
 {
-    public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class
+    public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class, IEntity, new ()
     {
         private readonly GNBDbContext _context;
 
@@ -38,8 +39,7 @@ namespace GNB.Data.Repositories
 
         public async Task Truncate()
         {
-            var tableName = typeof(TEntity).Name;
-            await _context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE @tableName", tableName);
+            await _context.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE {new TEntity().TableName}");
         }
     }
 }

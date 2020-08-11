@@ -10,6 +10,8 @@ namespace GNB.Data.Configuration
         {
             builder.HasKey(x => x.ID);
 
+            builder.Ignore(x => x.TableName);
+
             builder.Property(x => x.TransactionList).IsRequired();
 
             builder.Property(x => x.CreatedAt).HasDefaultValueSql("GETUTCDATE()");

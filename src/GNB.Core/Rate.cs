@@ -2,7 +2,7 @@
 
 namespace GNB.Core
 {
-    public class Rate : IAuditEntity
+    public class Rate : IAuditEntity, IEntity
     {
         public string ID { get; set; } = Guid.NewGuid().ToString("N");
         public string From { get; set; }
@@ -10,5 +10,6 @@ namespace GNB.Core
         public decimal ChangeRate { get; set; }
         public DateTime CreatedAt { get; }
         public DateTime LastUpdatedAt { get; }
+        public string TableName => "Rates";
     }
 }
