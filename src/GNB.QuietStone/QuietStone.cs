@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GNB.Core;
@@ -27,8 +28,9 @@ namespace GNB.QuietStone
 
         public async Task<List<Rate>> GetRates()
         {
+            throw new Exception();
             _logger.LogInformation("Attempt to retrieve current rates from QuietStone");
-            var rates = await _quietStoneApi.GetRates();
+            var rates = (await _quietStoneApi.GetRates()).Select(x => x.Adapt<Rate>());
             _logger.LogInformation("Rates were pulled from QuietStone");
 
             await _unitOfWork.RateTraceRepository.AddAsync(new RateTrace
@@ -39,11 +41,12 @@ namespace GNB.QuietStone
 
             _logger.LogInformation("Rate trace persisted");
 
-            return rates.Select(r => r.Adapt<Rate>()).ToList();
+            return rates.ToList();
         }
 
         public async Task<List<Transaction>> GetTransactions()
         {
+            throw new Exception();
             _logger.LogInformation("Attempt to retrieve transactions from QuietStone");
             var transactions = await _quietStoneApi.GetTransactions();
             _logger.LogInformation("Transactions were pulled from QuietStone");
