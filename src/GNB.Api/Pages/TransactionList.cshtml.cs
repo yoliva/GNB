@@ -17,13 +17,15 @@ namespace GNB.Api.Pages
         }
 
         public IEnumerable<TransactionDto> Transactions { get; set; }
+        public string Sku { get; set; }
 
         public async void OnGet(string sku, string currency = KnownCurrencies.EURO)
         {
-            await _transactionService.GetTransactionsBySku(sku, currency);
-            //Transactions = string.IsNullOrEmpty(sku)
-            //    ? Enumerable.Empty<TransactionDto>()
-            //    : await _transactionService.GetTransactionsBySku(sku, currency);
+            Sku = sku;
+
+            Transactions = string.IsNullOrEmpty(Sku)
+                ? Enumerable.Empty<TransactionDto>()
+                : await _transactionService.GetTransactionsBySku(Sku, currency);
         }
     }
 }
