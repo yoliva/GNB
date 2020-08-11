@@ -2,7 +2,7 @@
 
 namespace GNB.Core
 {
-    public class Transaction : IAuditEntity
+    public class Transaction : IAuditEntity, IEntity
     {
         public string ID { get; set; } = Guid.NewGuid().ToString("N");
         public string Sku { get; set; }
@@ -10,5 +10,6 @@ namespace GNB.Core
         public string Currency { get; set; }
         public DateTime CreatedAt { get; }
         public DateTime LastUpdatedAt { get; }
+        public string TableName => "Transactions";
     }
 }

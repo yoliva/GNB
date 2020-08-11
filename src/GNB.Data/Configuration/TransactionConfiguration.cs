@@ -10,6 +10,8 @@ namespace GNB.Data.Configuration
         {
             builder.HasKey(x => x.ID);
 
+            builder.Ignore(x => x.TableName);
+
             builder.Property(x => x.Sku).HasMaxLength(50).IsRequired();
             builder.Property(x => x.Amount).HasColumnType("decimal(12,2)");
             builder.Property(x => x.Currency).HasMaxLength(10).IsRequired();

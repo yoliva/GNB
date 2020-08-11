@@ -5,6 +5,7 @@
         public static void Configure()
         {
             QuietStoneTransactionMapping.Configure();
+            QuietStoneRateMapping.Configure();
         }
     }
 }

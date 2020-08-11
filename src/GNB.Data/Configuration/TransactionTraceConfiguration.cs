@@ -1,4 +1,4 @@
-﻿using GNB.Core;
+﻿using GNB.Core.Traces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,6 +9,8 @@ namespace GNB.Data.Configuration
         public void Configure(EntityTypeBuilder<TransactionTrace> builder)
         {
             builder.HasKey(x => x.ID);
+
+            builder.Ignore(x => x.TableName);
 
             builder.Property(x => x.TransactionList).IsRequired();
 
