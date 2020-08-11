@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GNB.Services.Dtos;
 using Microsoft.Extensions.Logging;
+using static GNB.Services.Utils;
 
 namespace GNB.Services
 {
@@ -41,7 +42,7 @@ namespace GNB.Services
                 ID = t.ID,
                 Currency = currency,
                 Sku = t.Sku,
-                Amount = t.Currency != currency ? t.Amount * ratesDefinition[(t.Currency, currency)] : t.Amount
+                Amount = BankRound(t.Currency != currency ? t.Amount * ratesDefinition[(t.Currency, currency)] : t.Amount)
             });
 
             _logger.LogInformation("Transactions normalized successfully");

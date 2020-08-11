@@ -4,6 +4,7 @@ using System.Linq;
 using GNB.Infrastructure.Capabilities;
 using GNB.Services.Dtos;
 using Microsoft.Extensions.Logging;
+using static GNB.Services.Utils;
 
 namespace GNB.Services
 {
@@ -56,7 +57,7 @@ namespace GNB.Services
 
                 if (currentExchange)
                 {
-                    rates[(from, to)] = cumulativeRate * exchangeRate;
+                    rates[(from, to)] = BankRound(cumulativeRate * exchangeRate);
                     break;
                 }
 
@@ -82,7 +83,7 @@ namespace GNB.Services
         {
             var exchanges = rates.Where(x => x.Key.From == currency).Select(x => (x.Key.To, x.Value));
             foreach (var (nextCurrency, rate) in exchanges)
-                ratesQueue.Enqueue((nextCurrency, rate, cumulativeRate * rate));
+                ratesQueue.Enqueue((nextCurrency, rate, BankRound(cumulativeRate * rate)));
         }
     }
 }
