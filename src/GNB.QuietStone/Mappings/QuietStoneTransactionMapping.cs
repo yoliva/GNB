@@ -9,7 +9,8 @@ namespace GNB.QuietStone.Mappings
         public static void Configure()
         {
             TypeAdapterConfig.GlobalSettings
-                .NewConfig<QuietStoneTransactionDto, Transaction>();
+                .NewConfig<QuietStoneTransactionDto, Transaction>()
+                .Map(x => x.Currency, x => x.Currency.ToUpper());
         }
     }
 }

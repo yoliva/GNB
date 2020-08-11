@@ -24,7 +24,7 @@ namespace GNB.Api.Controllers
                 Sku = sku,
                 Transactions = string.IsNullOrEmpty(sku)
                     ? Enumerable.Empty<TransactionDto>()
-                    : await _transactionService.GetTransactionsBySku(sku, currency)
+                    : await _transactionService.GetTransactionsBySku(sku, currency.ToUpper())
             });
         }
     }
